@@ -75,7 +75,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "frame-ancestors 'self' https://painel.dialogue360.com.br"
+            value: "frame-ancestors https://painel.dialogue360.com.br"
           },
           {
             key: 'X-Frame-Options',
