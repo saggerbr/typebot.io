@@ -75,11 +75,11 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "frame-ancestors https://painel.dialogue360.com.br"
+            value: "frame-ancestors dialogue360.com.br"
           },
           {
             key: 'X-Frame-Options',
-            value: 'ALLOW-FROM https://painel.dialogue360.com.br'
+            value: 'ALLOW-FROM dialogue360.com.br'
           },
         ],
       },
