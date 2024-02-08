@@ -66,8 +66,20 @@ const nextConfig = {
         source: '/(.*)?',
         headers: [
           {
+            key: 'Access-Control-Allow-Origin',
+            value: '*'
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET,HEAD,PUT,PATCH,POST,DELETE'
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "frame-ancestors 'self' https://painel.dialogue360.com.br"
+          },
+          {
             key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
+            value: 'ALLOW-FROM https://painel.dialogue360.com.br'
           },
         ],
       },
