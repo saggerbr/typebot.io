@@ -7837,6 +7837,10 @@
                             "type": "string",
                             "nullable": true
                           },
+                          "folderId": {
+                            "type": "string",
+                            "nullable": true
+                          },
                           "resultsTablePreferences": {
                             "type": "object",
                             "nullable": true,
@@ -7880,7 +7884,8 @@
                           "variables",
                           "theme",
                           "settings",
-                          "icon"
+                          "icon",
+                          "folderId"
                         ],
                         "title": "Typebot V6"
                       },
@@ -10451,6 +10456,10 @@
                             "type": "string",
                             "nullable": true
                           },
+                          "folderId": {
+                            "type": "string",
+                            "nullable": true
+                          },
                           "resultsTablePreferences": {
                             "type": "object",
                             "nullable": true,
@@ -10494,7 +10503,8 @@
                           "variables",
                           "theme",
                           "settings",
-                          "icon"
+                          "icon",
+                          "folderId"
                         ],
                         "title": "Typebot V5"
                       }
@@ -15348,7 +15358,7 @@
                   },
                   "folderName": {
                     "type": "string",
-                    "default": "New folder"
+                    "default": ""
                   },
                   "parentFolderId": {
                     "type": "string"
@@ -18792,7 +18802,9 @@
                   "qr-code",
                   "dify-ai",
                   "mistral",
-                  "elevenlabs"
+                  "elevenlabs",
+                  "together-ai",
+                  "open-router"
                 ]
               },
               "options": {}
@@ -19433,8 +19445,12 @@
                           "family": {
                             "type": "string"
                           },
-                          "url": {
+                          "css": {
                             "type": "string"
+                          },
+                          "url": {
+                            "type": "string",
+                            "description": "Deprecated, use `css` instead"
                           }
                         },
                         "required": [
@@ -19458,6 +19474,37 @@
                   },
                   "content": {
                     "type": "string"
+                  }
+                }
+              },
+              "progressBar": {
+                "type": "object",
+                "properties": {
+                  "isEnabled": {
+                    "type": "boolean"
+                  },
+                  "color": {
+                    "type": "string"
+                  },
+                  "backgroundColor": {
+                    "type": "string"
+                  },
+                  "placement": {
+                    "type": "string",
+                    "enum": [
+                      "Top",
+                      "Bottom"
+                    ]
+                  },
+                  "thickness": {
+                    "type": "number"
+                  },
+                  "position": {
+                    "type": "string",
+                    "enum": [
+                      "fixed",
+                      "absolute"
+                    ]
                   }
                 }
               }

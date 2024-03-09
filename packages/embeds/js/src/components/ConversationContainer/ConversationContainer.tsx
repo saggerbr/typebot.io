@@ -32,6 +32,7 @@ import {
 import { InputBlockType } from '@typebot.io/schemas/features/blocks/inputs/constants'
 import { saveClientLogsQuery } from '@/queries/saveClientLogsQuery'
 import { HTTPError } from 'ky'
+import { persist } from '@/utils/persist'
 
 const parseDynamicTheme = (
   initialTheme: Theme,
@@ -64,17 +65,24 @@ type Props = {
   onAnswer?: (answer: { message: string; blockId: string }) => void
   onEnd?: () => void
   onNewLogs?: (logs: OutgoingLog[]) => void
+  onProgressUpdate?: (progress: number) => void
 }
 
 export const ConversationContainer = (props: Props) => {
   let chatContainer: HTMLDivElement | undefined
-  const [chatChunks, setChatChunks] = createSignal<ChatChunkType[]>([
+  const [chatChunks, setChatChunks] = persist(
+    createSignal<ChatChunkType[]>([
+      {
+        input: props.initialChatReply.input,
+        messages: props.initialChatReply.messages,
+        clientSideActions: props.initialChatReply.clientSideActions,
+      },
+    ]),
     {
-      input: props.initialChatReply.input,
-      messages: props.initialChatReply.messages,
-      clientSideActions: props.initialChatReply.clientSideActions,
-    },
-  ])
+      key: `typebot-${props.context.typebot.id}-chatChunks`,
+      storage: props.context.storage,
+    }
+  )
   const [dynamicTheme, setDynamicTheme] = createSignal<
     ContinueChatResponse['dynamicTheme']
   >(props.initialChatReply.dynamicTheme)
@@ -172,6 +180,7 @@ export const ConversationContainer = (props: Props) => {
       return
     }
     if (!data) return
+    if (data.progress) props.onProgressUpdate?.(data.progress)
     if (data.lastMessageNewFormat) {
       setFormattedMessages([
         ...formattedMessages(),
@@ -269,12 +278,12 @@ export const ConversationContainer = (props: Props) => {
   return (
     <div
       ref={chatContainer}
-      class="flex flex-col overflow-y-scroll w-full min-h-full px-3 pt-10 relative scrollable-container typebot-chat-view scroll-smooth gap-2"
+      class="flex flex-col overflow-y-auto w-full min-h-full px-3 pt-10 relative scrollable-container typebot-chat-view scroll-smooth gap-2"
     >
       <For each={chatChunks()}>
         {(chatChunk, index) => (
           <ChatChunk
-            inputIndex={index()}
+            index={index()}
             messages={chatChunk.messages}
             input={chatChunk.input}
             theme={theme()}
@@ -284,9 +293,11 @@ export const ConversationContainer = (props: Props) => {
             hideAvatar={
               !chatChunk.input &&
               ((chatChunks()[index() + 1]?.messages ?? 0).length > 0 ||
-                chatChunks()[index() + 1]?.streamingMessageId !== undefined)
+                chatChunks()[index() + 1]?.streamingMessageId !== undefined ||
+                (chatChunk.messages.length > 0 && isSending()))
             }
             hasError={hasError() && index() === chatChunks().length - 1}
+            isTransitionDisabled={index() !== chatChunks().length - 1}
             onNewBubbleDisplayed={handleNewBubbleDisplayed}
             onAllBubblesDisplayed={handleAllBubblesDisplayed}
             onSubmit={sendMessage}

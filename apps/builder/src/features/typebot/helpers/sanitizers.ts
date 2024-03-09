@@ -123,7 +123,21 @@ export const isPublicIdNotAvailable = async (publicId: string) => {
   return typebotWithSameIdCount > 0
 }
 
-export const isCustomDomainNotAvailable = async (customDomain: string) => {
+export const isCustomDomainNotAvailable = async ({
+  customDomain,
+  workspaceId,
+}: {
+  customDomain: string
+  workspaceId: string
+}) => {
+  const domainCount = await prisma.customDomain.count({
+    where: {
+      workspaceId,
+      name: customDomain.split('/')[0],
+    },
+  })
+  if (domainCount === 0) return true
+
   const typebotWithSameDomainCount = await prisma.typebot.count({
     where: {
       customDomain,
@@ -131,4 +145,21 @@ export const isCustomDomainNotAvailable = async (customDomain: string) => {
   })
 
   return typebotWithSameDomainCount > 0
+}
+
+export const sanitizeFolderId = async ({
+  folderId,
+  workspaceId,
+}: {
+  folderId: string | null
+  workspaceId: string
+}) => {
+  if (!folderId) return
+  const folderCount = await prisma.dashboardFolder.count({
+    where: {
+      id: folderId,
+      workspaceId,
+    },
+  })
+  return folderCount !== 0 ? folderId : undefined
 }
